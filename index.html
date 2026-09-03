@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flashcards & Revision - ToolBundle</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card-bg: #181b23;
+      --border: #282d3d;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 2rem 1rem; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 680px; }
+
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    h1 { font-size: 1.5rem; font-weight: 700; }
+    .status-badge { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; }
+    .status-dot.active { background: var(--success); }
+
+    .btn { background: var(--accent); color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+    .btn:hover { background: var(--accent-hover); }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .flashcard-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2.5rem 1.5rem; min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; position: relative; margin-bottom: 1.5rem; user-select: none; }
+    .flashcard-label { position: absolute; top: 1rem; left: 1.2rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+    .card-text { font-size: 1.25rem; font-weight: 500; line-height: 1.5; }
+
+    .actions { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
+    .rating-btn { flex: 1; padding: 0.75rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; }
+    .again-btn { background: var(--danger); }
+    .good-btn { background: var(--success); }
+
+    .form-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
+    .form-box h3 { font-size: 1rem; margin-bottom: 1rem; }
+    input, textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.9rem; }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+    
+    .sync-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <h1>⚡ Flashcards</h1>
+      <div class="status-badge">
+        <span class="status-dot" id="syncDot"></span>
+        <span id="syncText">Local Storage Only</span>
+      </div>
+    </div>
+    <button class="btn btn-secondary" id="authBtn">Connect Google Drive</button>
+  </header>
+
+  <!-- Flashcard Study Area -->
+  <div class="flashcard-box" id="flashcard">
+    <span class="flashcard-label" id="cardSide">Question</span>
+    <div class="card-text" id="cardContent">Add your first card below to start studying.</div>
+  </div>
+
+  <div class="actions" id="reviewControls" style="display: none;">
+    <button class="rating-btn again-btn" onclick="reviewCard(false)">Again (1 min)</button>
+    <button class="rating-btn good-btn" onclick="reviewCard(true)">Good (+1 Day)</button>
+  </div>
+
+  <!-- Quick Add Card Box -->
+  <div class="form-box">
+    <h3>+ Add New Card</h3>
+    <input type="text" id="frontInput" placeholder="Front (e.g. What is Boyle's Law?)" />
+    <textarea id="backInput" rows="2" placeholder="Back (e.g. Pressure is inversely proportional to volume...)"></textarea>
+    <button class="btn" style="width: 100%;" onclick="addCard()">Save Card</button>
+    
+    <div class="sync-actions">
+      <button class="btn btn-secondary" style="flex: 1;" id="saveDriveBtn" onclick="syncToDrive()" disabled>Backup to Drive</button>
+      <button class="btn btn-secondary" style="flex: 1;" id="loadDriveBtn" onclick="syncFromDrive()" disabled>Restore from Drive</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CLIENT_ID = '286157587092-qa3c8ma7uo2drjf1tjonnc55cb45v22m.apps.googleusercontent.com';
+  const SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+
+  let accessToken = null;
+  let tokenClient = null;
+  let isFlipped = false;
+  let currentIndex = 0;
+
+  let deck = JSON.parse(localStorage.getItem('tb_flashcards')) || [
+    { front: "What is spaced repetition?", back: "Reviewing material at systematic intervals to boost memory retention." },
+    { front: "Which Google scope isolates app data?", back: "drive.appdata (saves in a hidden, app-specific folder)." }
+  ];
+
+  window.onload = () => {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPE,
+      callback: (res) => {
+        if (res && res.access_token) {
+          accessToken = res.access_token;
+          document.getElementById('syncDot').classList.add('active');
+          document.getElementById('syncText').innerText = 'Connected to Google Drive';
+          document.getElementById('authBtn').style.display = 'none';
+          document.getElementById('saveDriveBtn').disabled = false;
+          document.getElementById('loadDriveBtn').disabled = false;
+          syncFromDrive();
+        }
+      },
+    });
+    renderCard();
+  };
+
+  document.getElementById('authBtn').addEventListener('click', () => {
+    tokenClient.requestAccessToken();
+  });
+
+  const cardElement = document.getElementById('flashcard');
+  cardElement.addEventListener('click', () => {
+    if (!deck.length) return;
+    isFlipped = !isFlipped;
+    document.getElementById('cardSide').innerText = isFlipped ? 'Answer' : 'Question';
+    document.getElementById('cardContent').innerText = isFlipped ? deck[currentIndex].back : deck[currentIndex].front;
+    document.getElementById('reviewControls').style.display = isFlipped ? 'flex' : 'none';
+  });
+
+  function renderCard() {
+    if (!deck.length) {
+      document.getElementById('cardContent').innerText = 'No cards left! Add more below.';
+      document.getElementById('reviewControls').style.display = 'none';
+      return;
+    }
+    isFlipped = false;
+    document.getElementById('cardSide').innerText = 'Question';
+    document.getElementById('cardContent').innerText = deck[currentIndex].front;
+    document.getElementById('reviewControls').style.display = 'none';
+  }
+
+  function reviewCard(success) {
+    if (success) {
+      currentIndex = (currentIndex + 1) % deck.length;
+    } else {
+      const failed = deck.splice(currentIndex, 1)[0];
+      deck.push(failed);
+    }
+    renderCard();
+  }
+
+  function addCard() {
+    const front = document.getElementById('frontInput').value.trim();
+    const back = document.getElementById('backInput').value.trim();
+    if (!front || !back) return;
+
+    deck.push({ front, back });
+    localStorage.setItem('tb_flashcards', JSON.stringify(deck));
+    document.getElementById('frontInput').value = '';
+    document.getElementById('backInput').value = '';
+    
+    if (deck.length === 1) renderCard();
+    if (accessToken) syncToDrive();
+  }
+
+  // Google Drive REST API Calls
+  async function syncToDrive() {
+    if (!accessToken) return;
+    document.getElementById('syncText').innerText = 'Syncing to Drive...';
+
+    const searchRes = await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='toolbundle_deck.json'", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const searchData = await searchRes.json();
+    const fileId = searchData.files?.[0]?.id;
+
+    const fileContent = new Blob([JSON.stringify(deck)], { type: 'application/json' });
+
+    if (fileId) {
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: fileContent
+      });
+    } else {
+      const metadata = { name: 'toolbundle_deck.json', parents: ['appDataFolder'] };
+      const form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+      form.append('file', fileContent);
+
+      await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessToken}` },
+        body: form
+      });
+    }
+
+    document.getElementById('syncText').innerText = 'Synced to Google Drive';
+  }
+
+  async function syncFromDrive() {
+    if (!accessToken) return;
+    const searchRes = await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='toolbundle_deck.json'", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const searchData = await searchRes.json();
+
+    if (searchData.files && searchData.files.length > 0) {
+      const fileId = searchData.files[0].id;
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+      deck = await res.json();
+      localStorage.setItem('tb_flashcards', JSON.stringify(deck));
+      currentIndex = 0;
+      renderCard();
+      document.getElementById('syncText').innerText = 'Synced with Google Drive';
+    }
+  }
+</script>
+
+</body>
+</html>
