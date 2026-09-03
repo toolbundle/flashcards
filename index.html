@@ -7,85 +7,149 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
-      --bg: #0f1117;
-      --card-bg: #181b23;
-      --border: #282d3d;
+      --bg: #0b0d13;
+      --surface: #141721;
+      --card-bg: #1c202e;
+      --border: #2a3144;
       --accent: #3b82f6;
       --accent-hover: #2563eb;
       --text: #f3f4f6;
       --text-muted: #9ca3af;
       --success: #10b981;
+      --warning: #f59e0b;
       --danger: #ef4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 2rem 1rem; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 680px; }
+    body { background: var(--bg); color: var(--text); padding: 1.5rem; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 720px; }
 
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    h1 { font-size: 1.5rem; font-weight: 700; }
-    .status-badge { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; }
-    .status-dot.active { background: var(--success); }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .title-group { display: flex; align-items: center; gap: 0.75rem; }
+    .badge { font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); }
+    .badge.online { border-color: var(--success); color: var(--success); }
 
-    .btn { background: var(--accent); color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+    .btn { background: var(--accent); color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.15s; }
     .btn:hover { background: var(--accent-hover); }
-    .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .btn-secondary:hover { background: var(--border); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+    .btn-secondary:hover { background: var(--card-bg); border-color: #3b4257; }
 
-    .flashcard-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 2.5rem 1.5rem; min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; position: relative; margin-bottom: 1.5rem; user-select: none; }
-    .flashcard-label { position: absolute; top: 1rem; left: 1.2rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-    .card-text { font-size: 1.25rem; font-weight: 500; line-height: 1.5; }
+    /* Top Controls */
+    .deck-bar { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+    select { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 0.6rem; border-radius: 8px; outline: none; }
+    
+    /* Stats Header */
+    .deck-stats { display: flex; gap: 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+    .stat-pill { background: var(--surface); padding: 0.3rem 0.8rem; border-radius: 6px; border: 1px solid var(--border); }
+    .stat-pill b { color: var(--text); }
 
-    .actions { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
-    .rating-btn { flex: 1; padding: 0.75rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; }
-    .again-btn { background: var(--danger); }
-    .good-btn { background: var(--success); }
+    /* Flashcard Flip Stage */
+    .stage { perspective: 1000px; margin-bottom: 1.25rem; }
+    .flashcard {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+      min-height: 280px; display: flex; flex-direction: column; justify-content: center;
+      align-items: center; text-align: center; padding: 2rem; cursor: pointer;
+      position: relative; transition: border-color 0.2s; user-select: none;
+    }
+    .flashcard:hover { border-color: #3b4257; }
+    .card-meta { position: absolute; top: 1rem; left: 1.25rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+    .card-shortcut-hint { position: absolute; bottom: 1rem; font-size: 0.75rem; color: #6b7280; }
+    .card-text { font-size: 1.35rem; line-height: 1.6; font-weight: 500; }
 
-    .form-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; }
-    .form-box h3 { font-size: 1rem; margin-bottom: 1rem; }
+    /* SRS Buttons */
+    .rating-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; }
+    .rate-btn { padding: 0.8rem 0.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; font-size: 0.85rem; }
+    .rate-sub { font-size: 0.7rem; opacity: 0.8; font-weight: 400; }
+    .btn-again { background: #dc2626; }
+    .btn-hard { background: #d97706; }
+    .btn-good { background: #2563eb; }
+    .btn-easy { background: #059669; }
+
+    /* Accordion Panels */
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .panel-title { font-size: 0.95rem; font-weight: 600; }
+    .panel-content { display: none; margin-top: 1rem; }
+    .panel-content.open { display: block; }
+
     input, textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.9rem; }
     input:focus, textarea:focus { outline: none; border-color: var(--accent); }
-    
-    .sync-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .button-group { display: flex; gap: 0.5rem; }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <div>
-      <h1>⚡ Flashcards</h1>
-      <div class="status-badge">
-        <span class="status-dot" id="syncDot"></span>
-        <span id="syncText">Local Storage Only</span>
-      </div>
+    <div class="title-group">
+      <h2>⚡ ToolBundle Flashcards</h2>
+      <span class="badge" id="cloudBadge">● Local Only</span>
     </div>
-    <button class="btn btn-secondary" id="authBtn">Connect Google Drive</button>
+    <button class="btn btn-secondary" id="authBtn">Connect Drive</button>
   </header>
 
-  <!-- Flashcard Study Area -->
-  <div class="flashcard-box" id="flashcard">
-    <span class="flashcard-label" id="cardSide">Question</span>
-    <div class="card-text" id="cardContent">Add your first card below to start studying.</div>
+  <!-- Deck Switcher & Creation -->
+  <div class="deck-bar">
+    <select id="deckSelector" onchange="switchDeck()"></select>
+    <button class="btn btn-secondary" onclick="promptNewDeck()">+ Deck</button>
+    <button class="btn btn-secondary" onclick="deleteCurrentDeck()">🗑️</button>
   </div>
 
-  <div class="actions" id="reviewControls" style="display: none;">
-    <button class="rating-btn again-btn" onclick="reviewCard(false)">Again (1 min)</button>
-    <button class="rating-btn good-btn" onclick="reviewCard(true)">Good (+1 Day)</button>
+  <div class="deck-stats">
+    <div class="stat-pill">Due Today: <b id="dueCount">0</b></div>
+    <div class="stat-pill">Total Cards: <b id="totalCount">0</b></div>
   </div>
 
-  <!-- Quick Add Card Box -->
-  <div class="form-box">
-    <h3>+ Add New Card</h3>
-    <input type="text" id="frontInput" placeholder="Front (e.g. What is Boyle's Law?)" />
-    <textarea id="backInput" rows="2" placeholder="Back (e.g. Pressure is inversely proportional to volume...)"></textarea>
-    <button class="btn" style="width: 100%;" onclick="addCard()">Save Card</button>
-    
-    <div class="sync-actions">
-      <button class="btn btn-secondary" style="flex: 1;" id="saveDriveBtn" onclick="syncToDrive()" disabled>Backup to Drive</button>
-      <button class="btn btn-secondary" style="flex: 1;" id="loadDriveBtn" onclick="syncFromDrive()" disabled>Restore from Drive</button>
+  <!-- Study Stage -->
+  <div class="stage">
+    <div class="flashcard" id="cardBox" onclick="flipCard()">
+      <span class="card-meta" id="cardMeta">Question</span>
+      <div class="card-text" id="cardText">All caught up for today! 🎉</div>
+      <div class="card-shortcut-hint" id="cardHint">[Click or Space to Flip]</div>
+    </div>
+  </div>
+
+  <!-- 4-Button SM-2 Controls -->
+  <div class="rating-row" id="srsControls" style="display: none;">
+    <button class="rate-btn btn-again" onclick="answerCard(1)">
+      Again <span class="rate-sub">&lt; 10m (1)</span>
+    </button>
+    <button class="rate-btn btn-hard" onclick="answerCard(2)">
+      Hard <span class="rate-sub">1d (2)</span>
+    </button>
+    <button class="rate-btn btn-good" onclick="answerCard(3)">
+      Good <span class="rate-sub" id="goodInt">-- (3)</span>
+    </button>
+    <button class="rate-btn btn-easy" onclick="answerCard(4)">
+      Easy <span class="rate-sub" id="easyInt">-- (4)</span>
+    </button>
+  </div>
+
+  <!-- Add Card Panel -->
+  <div class="panel">
+    <div class="panel-header" onclick="togglePanel('addPanel')">
+      <span class="panel-title">+ Add Flashcard</span>
+      <span id="addPanelArrow">▼</span>
+    </div>
+    <div class="panel-content" id="addPanel">
+      <input type="text" id="frontIn" placeholder="Front (Term or Question)" />
+      <textarea id="backIn" rows="2" placeholder="Back (Definition or Formula)"></textarea>
+      <button class="btn" style="width: 100%;" onclick="addSingleCard()">Add to Deck</button>
+    </div>
+  </div>
+
+  <!-- Bulk Import / Export Panel -->
+  <div class="panel">
+    <div class="panel-header" onclick="togglePanel('bulkPanel')">
+      <span class="panel-title">⚡ Bulk Import / Export (Quizlet Style)</span>
+      <span id="bulkPanelArrow">▼</span>
+    </div>
+    <div class="panel-content" id="bulkPanel">
+      <textarea id="bulkData" rows="4" placeholder="Term 1 [TAB] Definition 1&#10;Term 2 [TAB] Definition 2"></textarea>
+      <div class="button-group">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="importBulk()">Import Lines</button>
+        <button class="btn btn-secondary" style="flex: 1;" onclick="exportBulk()">Copy Deck as TSV</button>
+      </div>
     </div>
   </div>
 </div>
@@ -96,94 +160,243 @@
 
   let accessToken = null;
   let tokenClient = null;
+  let currentDeck = 'Default Deck';
   let isFlipped = false;
-  let currentIndex = 0;
+  let queue = [];
+  let activeCard = null;
 
-  let deck = JSON.parse(localStorage.getItem('tb_flashcards')) || [
-    { front: "What is spaced repetition?", back: "Reviewing material at systematic intervals to boost memory retention." },
-    { front: "Which Google scope isolates app data?", back: "drive.appdata (saves in a hidden, app-specific folder)." }
-  ];
+  // Initial State Store
+  let db = JSON.parse(localStorage.getItem('tb_srs_data')) || {
+    "Default Deck": [
+      { id: 1, front: "What does the SM-2 algorithm calculate?", back: "The exact interval to review a card before forgetting it.", reps: 0, ef: 2.5, interval: 0, due: Date.now() },
+      { id: 2, front: "Boyle's Law Formula", back: "P1 * V1 = P2 * V2 (Temperature is constant)", reps: 0, ef: 2.5, interval: 0, due: Date.now() }
+    ]
+  };
 
   window.onload = () => {
+    initAuth();
+    populateDecks();
+    loadQueue();
+    setupKeyboard();
+  };
+
+  function initAuth() {
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: SCOPE,
       callback: (res) => {
-        if (res && res.access_token) {
+        if (res?.access_token) {
           accessToken = res.access_token;
-          document.getElementById('syncDot').classList.add('active');
-          document.getElementById('syncText').innerText = 'Connected to Google Drive';
+          const badge = document.getElementById('cloudBadge');
+          badge.innerText = '● Drive Synced';
+          badge.classList.add('online');
           document.getElementById('authBtn').style.display = 'none';
-          document.getElementById('saveDriveBtn').disabled = false;
-          document.getElementById('loadDriveBtn').disabled = false;
-          syncFromDrive();
+          pullFromDrive();
         }
-      },
+      }
     });
-    renderCard();
-  };
-
-  document.getElementById('authBtn').addEventListener('click', () => {
-    tokenClient.requestAccessToken();
-  });
-
-  const cardElement = document.getElementById('flashcard');
-  cardElement.addEventListener('click', () => {
-    if (!deck.length) return;
-    isFlipped = !isFlipped;
-    document.getElementById('cardSide').innerText = isFlipped ? 'Answer' : 'Question';
-    document.getElementById('cardContent').innerText = isFlipped ? deck[currentIndex].back : deck[currentIndex].front;
-    document.getElementById('reviewControls').style.display = isFlipped ? 'flex' : 'none';
-  });
-
-  function renderCard() {
-    if (!deck.length) {
-      document.getElementById('cardContent').innerText = 'No cards left! Add more below.';
-      document.getElementById('reviewControls').style.display = 'none';
-      return;
-    }
-    isFlipped = false;
-    document.getElementById('cardSide').innerText = 'Question';
-    document.getElementById('cardContent').innerText = deck[currentIndex].front;
-    document.getElementById('reviewControls').style.display = 'none';
+    document.getElementById('authBtn').onclick = () => tokenClient.requestAccessToken();
   }
 
-  function reviewCard(success) {
-    if (success) {
-      currentIndex = (currentIndex + 1) % deck.length;
+  /* --- SM-2 Algorithm Implementation --- */
+  function calculateSM2(card, rating) {
+    let { reps, ef, interval } = card;
+
+    // Rating: 1 = Again, 2 = Hard, 3 = Good, 4 = Easy
+    if (rating === 1) {
+      reps = 0;
+      interval = 1; // 1 day
     } else {
-      const failed = deck.splice(currentIndex, 1)[0];
-      deck.push(failed);
+      if (reps === 0) interval = 1;
+      else if (reps === 1) interval = (rating === 2) ? 3 : 6;
+      else interval = Math.round(interval * ef);
+
+      if (rating === 2) interval = Math.max(1, Math.round(interval * 0.8));
+      if (rating === 4) interval = Math.round(interval * 1.3);
+      reps++;
     }
-    renderCard();
+
+    // Adjust ease factor (minimum 1.3)
+    ef = ef + (0.1 - (4 - rating) * (0.08 + (4 - rating) * 0.02));
+    if (ef < 1.3) ef = 1.3;
+
+    const nextDue = Date.now() + (interval * 24 * 60 * 60 * 1000);
+    return { ...card, reps, ef, interval, due: nextDue };
   }
 
-  function addCard() {
-    const front = document.getElementById('frontInput').value.trim();
-    const back = document.getElementById('backInput').value.trim();
+  /* --- Study Queue Engine --- */
+  function loadQueue() {
+    const cards = db[currentDeck] || [];
+    const now = Date.now();
+    queue = cards.filter(c => c.due <= now);
+
+    document.getElementById('totalCount').innerText = cards.length;
+    document.getElementById('dueCount').innerText = queue.length;
+
+    isFlipped = false;
+    document.getElementById('srsControls').style.display = 'none';
+
+    if (queue.length > 0) {
+      activeCard = queue[0];
+      document.getElementById('cardMeta').innerText = `Card 1 of ${queue.length}`;
+      document.getElementById('cardText').innerText = activeCard.front;
+      document.getElementById('cardHint').innerText = '[Click or Space to Flip]';
+    } else {
+      activeCard = null;
+      document.getElementById('cardMeta').innerText = 'Finished';
+      document.getElementById('cardText').innerText = 'All caught up for today! 🎉';
+      document.getElementById('cardHint').innerText = '';
+    }
+  }
+
+  function flipCard() {
+    if (!activeCard) return;
+    isFlipped = !isFlipped;
+    document.getElementById('cardMeta').innerText = isFlipped ? 'Answer' : 'Question';
+    document.getElementById('cardText').innerText = isFlipped ? activeCard.back : activeCard.front;
+    document.getElementById('srsControls').style.display = isFlipped ? 'grid' : 'none';
+    document.getElementById('cardHint').innerText = isFlipped ? '[Press 1, 2, 3, or 4]' : '[Click or Space to Flip]';
+
+    if (isFlipped) {
+      // Calculate preview days on buttons
+      const goodInt = activeCard.reps === 0 ? 1 : Math.round((activeCard.interval || 1) * activeCard.ef);
+      const easyInt = Math.round(goodInt * 1.3);
+      document.getElementById('goodInt').innerText = `${goodInt}d (3)`;
+      document.getElementById('easyInt').innerText = `${easyInt}d (4)`;
+    }
+  }
+
+  function answerCard(rating) {
+    if (!activeCard) return;
+    const updated = calculateSM2(activeCard, rating);
+
+    // Save update to deck
+    const deckCards = db[currentDeck];
+    const idx = deckCards.findIndex(c => c.id === activeCard.id);
+    deckCards[idx] = updated;
+
+    saveData();
+    loadQueue();
+  }
+
+  /* --- Decks & Card Creation --- */
+  function populateDecks() {
+    const selector = document.getElementById('deckSelector');
+    selector.innerHTML = '';
+    Object.keys(db).forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.innerText = name;
+      if (name === currentDeck) opt.selected = true;
+      selector.appendChild(opt);
+    });
+  }
+
+  function switchDeck() {
+    currentDeck = document.getElementById('deckSelector').value;
+    loadQueue();
+  }
+
+  function promptNewDeck() {
+    const name = prompt('Deck Name:');
+    if (name && !db[name]) {
+      db[name] = [];
+      currentDeck = name;
+      populateDecks();
+      saveData();
+      loadQueue();
+    }
+  }
+
+  function deleteCurrentDeck() {
+    if (Object.keys(db).length <= 1) return alert('Cannot delete your only deck.');
+    if (confirm(`Delete deck "${currentDeck}"?`)) {
+      delete db[currentDeck];
+      currentDeck = Object.keys(db)[0];
+      populateDecks();
+      saveData();
+      loadQueue();
+    }
+  }
+
+  function addSingleCard() {
+    const front = document.getElementById('frontIn').value.trim();
+    const back = document.getElementById('backIn').value.trim();
     if (!front || !back) return;
 
-    deck.push({ front, back });
-    localStorage.setItem('tb_flashcards', JSON.stringify(deck));
-    document.getElementById('frontInput').value = '';
-    document.getElementById('backInput').value = '';
-    
-    if (deck.length === 1) renderCard();
-    if (accessToken) syncToDrive();
+    db[currentDeck].push({
+      id: Date.now(),
+      front, back, reps: 0, ef: 2.5, interval: 0, due: Date.now()
+    });
+
+    document.getElementById('frontIn').value = '';
+    document.getElementById('backIn').value = '';
+    saveData();
+    loadQueue();
   }
 
-  // Google Drive REST API Calls
-  async function syncToDrive() {
-    if (!accessToken) return;
-    document.getElementById('syncText').innerText = 'Syncing to Drive...';
+  function importBulk() {
+    const raw = document.getElementById('bulkData').value.trim();
+    if (!raw) return;
 
-    const searchRes = await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='toolbundle_deck.json'", {
+    const lines = raw.split('\n');
+    let added = 0;
+    lines.forEach(line => {
+      const parts = line.includes('\t') ? line.split('\t') : line.split('-');
+      if (parts.length >= 2) {
+        db[currentDeck].push({
+          id: Date.now() + Math.random(),
+          front: parts[0].trim(),
+          back: parts.slice(1).join('-').trim(),
+          reps: 0, ef: 2.5, interval: 0, due: Date.now()
+        });
+        added++;
+      }
+    });
+
+    document.getElementById('bulkData').value = '';
+    saveData();
+    loadQueue();
+    alert(`Imported ${added} cards!`);
+  }
+
+  function exportBulk() {
+    const tsv = db[currentDeck].map(c => `${c.front}\t${c.back}`).join('\n');
+    navigator.clipboard.writeText(tsv);
+    alert('Deck copied to clipboard in TSV format!');
+  }
+
+  function togglePanel(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+  }
+
+  function setupKeyboard() {
+    window.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.code === 'Space') { e.preventDefault(); flipCard(); }
+      if (isFlipped) {
+        if (e.key === '1') answerCard(1);
+        if (e.key === '2') answerCard(2);
+        if (e.key === '3') answerCard(3);
+        if (e.key === '4') answerCard(4);
+      }
+    });
+  }
+
+  /* --- Persistence: LocalStorage + Drive AppData --- */
+  function saveData() {
+    localStorage.setItem('tb_srs_data', JSON.stringify(db));
+    if (accessToken) pushToDrive();
+  }
+
+  async function pushToDrive() {
+    const searchRes = await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='toolbundle_decks.json'", {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     const searchData = await searchRes.json();
     const fileId = searchData.files?.[0]?.id;
-
-    const fileContent = new Blob([JSON.stringify(deck)], { type: 'application/json' });
+    const fileContent = new Blob([JSON.stringify(db)], { type: 'application/json' });
 
     if (fileId) {
       await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
@@ -192,38 +405,31 @@
         body: fileContent
       });
     } else {
-      const metadata = { name: 'toolbundle_deck.json', parents: ['appDataFolder'] };
+      const metadata = { name: 'toolbundle_decks.json', parents: ['appDataFolder'] };
       const form = new FormData();
       form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
       form.append('file', fileContent);
-
       await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
         method: 'POST',
         headers: { Authorization: `Bearer ${accessToken}` },
         body: form
       });
     }
-
-    document.getElementById('syncText').innerText = 'Synced to Google Drive';
   }
 
-  async function syncFromDrive() {
-    if (!accessToken) return;
-    const searchRes = await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='toolbundle_deck.json'", {
+  async function pullFromDrive() {
+    const searchRes = await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='toolbundle_decks.json'", {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     const searchData = await searchRes.json();
-
-    if (searchData.files && searchData.files.length > 0) {
-      const fileId = searchData.files[0].id;
-      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+    if (searchData.files?.length > 0) {
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${searchData.files[0].id}?alt=media`, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
-      deck = await res.json();
-      localStorage.setItem('tb_flashcards', JSON.stringify(deck));
-      currentIndex = 0;
-      renderCard();
-      document.getElementById('syncText').innerText = 'Synced with Google Drive';
+      db = await res.json();
+      localStorage.setItem('tb_srs_data', JSON.stringify(db));
+      populateDecks();
+      loadQueue();
     }
   }
 </script>
