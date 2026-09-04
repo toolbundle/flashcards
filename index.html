@@ -7,10 +7,11 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
-      --bg: #0c0e14;
-      --surface: #141722;
-      --card: #1d2232;
-      --border: #2d354a;
+      --bg: #090b10;
+      --surface: #11141f;
+      --card: #171b2a;
+      --border: #262c3f;
+      --border-hover: #3b4257;
       --accent: #3b82f6;
       --accent-hover: #2563eb;
       --text: #f3f4f6;
@@ -21,25 +22,31 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 1.5rem 1rem; display: flex; justify-content: center; min-height: 100vh; }
-    .container { width: 100%; max-width: 760px; }
+    body { background: var(--bg); color: var(--text); padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
 
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .badge { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
-    .badge.online { border-color: var(--success); color: var(--success); }
+    /* Shared Top Nav */
+    .nav-header { width: 100%; border-bottom: 1px solid var(--border); background: var(--surface); padding: 0.85rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--text); font-weight: 700; font-size: 1.1rem; }
+    .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .badge { font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 9999px; background: var(--card); border: 1px solid var(--border); color: var(--muted); font-weight: 600; }
+    .badge.active { border-color: rgba(16, 185, 129, 0.4); color: var(--success); }
 
-    .mode-tabs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.35rem; background: var(--surface); padding: 0.35rem; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
-    .tab-btn { padding: 0.6rem 0.2rem; border: none; background: transparent; color: var(--muted); font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.15s; font-size: 0.75rem; text-align: center; }
-    .tab-btn.active { background: var(--card); color: var(--text); }
-
-    .btn { background: var(--accent); color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.15s; }
+    .btn { background: var(--accent); color: white; border: none; padding: 0.55rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.15s; }
     .btn:hover { background: var(--accent-hover); }
     .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
     .btn-secondary:hover { background: var(--card); }
 
-    .deck-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .container { width: 100%; max-width: 760px; padding: 2.5rem 1.5rem 5rem; }
+
+    /* Mode Navigation Tabs */
+    .mode-tabs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.35rem; background: var(--surface); padding: 0.35rem; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+    .tab-btn { padding: 0.6rem 0.2rem; border: none; background: transparent; color: var(--muted); font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.15s; font-size: 0.75rem; text-align: center; }
+    .tab-btn.active { background: var(--card); color: var(--text); }
+
+    .deck-bar { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
     select { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 0.6rem; border-radius: 8px; outline: none; }
 
+    /* Flashcards Box */
     .flashcard { background: var(--card); border: 1px solid var(--border); border-radius: 14px; min-height: 260px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; cursor: pointer; position: relative; user-select: none; }
     .card-meta { position: absolute; top: 1rem; left: 1.25rem; font-size: 0.75rem; text-transform: uppercase; color: var(--muted); }
     .card-text { font-size: 1.35rem; font-weight: 500; line-height: 1.5; }
@@ -53,6 +60,7 @@
     .btn-good { background: #2563eb; }
     .btn-easy { background: #059669; }
 
+    /* Panels */
     .work-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; }
     .work-prompt { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
     .work-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.25rem; }
@@ -63,6 +71,7 @@
     .cloze-blank { border-bottom: 2px solid var(--accent); padding: 0 4px; color: var(--accent); font-weight: 700; }
     .blurting-timer { font-size: 1.5rem; font-weight: 700; color: var(--warning); margin-bottom: 0.75rem; text-align: right; }
 
+    /* Match Grid */
     .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
     .match-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
     .tile { background: var(--card); border: 2px solid var(--border); padding: 1.25rem 0.75rem; border-radius: 10px; min-height: 100px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; user-select: none; }
@@ -72,22 +81,27 @@
     .tile.error { border-color: var(--danger); background: #450a0a; }
 
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem; }
-    textarea, input[type="text"] { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.9rem; }
+    textarea, input[type="text"] { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.9rem; }
     textarea:focus, input[type="text"]:focus { outline: none; border-color: var(--accent); }
+
+    /* Shared Footer */
+    footer { width: 100%; border-top: 1px solid var(--border); background: var(--surface); padding: 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: auto; }
+    footer a { color: var(--text); text-decoration: none; font-weight: 600; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div>
-      <h2>⚡ ToolBundle Active Recall</h2>
-      <span class="badge" id="cloudBadge">● Local Only</span>
-    </div>
+<header class="nav-header">
+  <a href="https://toolbundle.github.io/" class="brand">
+    <span>⚡</span> ToolBundle
+  </a>
+  <div class="nav-actions">
+    <span class="badge" id="cloudBadge">● Local Only</span>
     <button class="btn btn-secondary" id="authBtn">Connect Drive</button>
-  </header>
+  </div>
+</header>
 
-  <!-- Navigation Tabs -->
+<div class="container">
   <div class="mode-tabs">
     <button class="tab-btn active" onclick="switchMode('cards')">🃏 Flashcards</button>
     <button class="tab-btn" onclick="switchMode('type')">✍️ Type-In</button>
@@ -102,7 +116,7 @@
     <button class="btn btn-secondary" onclick="promptNewDeck()">+ Deck</button>
   </div>
 
-  <!-- MODE 1: Flashcards (Anki SM-2 Engine) -->
+  <!-- MODE 1: Flashcards -->
   <div id="modeCards">
     <div class="flashcard" id="cardBox" onclick="flipCard()">
       <span class="card-meta" id="cardMeta">Question</span>
@@ -125,7 +139,7 @@
     </div>
   </div>
 
-  <!-- MODE 2: Type-in Active Recall -->
+  <!-- MODE 2: Type-In -->
   <div id="modeType" style="display: none;">
     <div class="work-box">
       <div class="work-prompt" id="typePrompt">Question</div>
@@ -136,7 +150,7 @@
     </div>
   </div>
 
-  <!-- MODE 3: Cloze Deletion -->
+  <!-- MODE 3: Cloze -->
   <div id="modeCloze" style="display: none;">
     <div class="work-box">
       <div class="work-sub">Fill in the missing core keyword:</div>
@@ -148,7 +162,7 @@
     </div>
   </div>
 
-  <!-- MODE 4: Blurting / Feynman -->
+  <!-- MODE 4: Blurting -->
   <div id="modeBlurt" style="display: none;">
     <div class="work-box">
       <div class="blurting-timer" id="blurtTimer">45s</div>
@@ -161,7 +175,7 @@
     </div>
   </div>
 
-  <!-- MODE 5: Reverse Testing -->
+  <!-- MODE 5: Reverse -->
   <div id="modeReverse" style="display: none;">
     <div class="work-box">
       <div class="work-sub">Identify the exact term for this definition:</div>
@@ -173,7 +187,7 @@
     </div>
   </div>
 
-  <!-- MODE 6: Match Grid -->
+  <!-- MODE 6: Match -->
   <div id="modeMatch" style="display: none;">
     <div class="match-header">
       <span>Timer: <b id="matchTimer">0.0s</b></span>
@@ -190,6 +204,10 @@
   </div>
 </div>
 
+<footer>
+  <p>Part of the <a href="https://toolbundle.github.io/">ToolBundle</a> open initiative. Synced via Google Cloud.</p>
+</footer>
+
 <script>
   const CLIENT_ID = '286157587092-qa3c8ma7uo2drjf1tjonnc55cb45v22m.apps.googleusercontent.com';
   const SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
@@ -201,18 +219,16 @@
   let queue = [];
   let activeCard = null;
 
-  // Genuine Anki Configuration Constants
   const ANKI_CONFIG = {
-    learningSteps: [1, 10], // 1 min, 10 min
-    graduatingInterval: 1,  // 1 day
-    easyInterval: 4,        // 4 days
+    learningSteps: [1, 10],
+    graduatingInterval: 1,
+    easyInterval: 4,
     startingEase: 2.5,
     minEase: 1.3,
     hardIntervalMultiplier: 1.2,
     easyBonus: 1.3
   };
 
-  // Deck database initialized with Anki state parameters
   let db = JSON.parse(localStorage.getItem('tb_anki_study_suite')) || {
     "Marketing IGCSE": [
       { id: 1, front: "A customer", back: "A person or organisation which buys goods or services from a business.", state: 'new', stepIndex: 0, easeFactor: 2.5, interval: 0, due: Date.now() },
@@ -240,7 +256,7 @@
           accessToken = res.access_token;
           const badge = document.getElementById('cloudBadge');
           badge.innerText = '● Drive Synced';
-          badge.classList.add('online');
+          badge.classList.add('active');
           document.getElementById('authBtn').style.display = 'none';
           pullFromDrive();
         }
@@ -262,7 +278,6 @@
     if (mode === 'match') startMatchGame();
   }
 
-  /* --- Genuine Anki SM-2 Scheduling Engine --- */
   function scheduleAnki(card, rating) {
     const now = Date.now();
     let state = card.state || 'new';
@@ -270,43 +285,34 @@
     let easeFactor = card.easeFactor || ANKI_CONFIG.startingEase;
     let interval = card.interval || 0;
 
-    // 1. Learning / Relearning state (Intraday Steps)
     if (state === 'new' || state === 'learning' || state === 'relearning') {
-      if (rating === 1) { // Again: return to step 0 (1 minute)
-        return { ...card, state: 'learning', stepIndex: 0, due: now + ANKI_CONFIG.learningSteps[0] * 60 * 1000 };
-      }
-      if (rating === 2) { // Hard: repeat current step
-        const stepTime = ANKI_CONFIG.learningSteps[stepIndex] || 1;
-        return { ...card, state: 'learning', due: now + stepTime * 60 * 1000 };
-      }
-      if (rating === 3) { // Good: advance step or graduate
+      if (rating === 1) return { ...card, state: 'learning', stepIndex: 0, due: now + ANKI_CONFIG.learningSteps[0] * 60 * 1000 };
+      if (rating === 2) return { ...card, state: 'learning', due: now + (ANKI_CONFIG.learningSteps[stepIndex] || 1) * 60 * 1000 };
+      if (rating === 3) {
         if (stepIndex < ANKI_CONFIG.learningSteps.length - 1) {
           return { ...card, state: 'learning', stepIndex: stepIndex + 1, due: now + ANKI_CONFIG.learningSteps[stepIndex + 1] * 60 * 1000 };
         } else {
           return { ...card, state: 'review', interval: ANKI_CONFIG.graduatingInterval, due: now + ANKI_CONFIG.graduatingInterval * 86400 * 1000 };
         }
       }
-      if (rating === 4) { // Easy: graduate directly with easy interval
-        return { ...card, state: 'review', interval: ANKI_CONFIG.easyInterval, due: now + ANKI_CONFIG.easyInterval * 86400 * 1000 };
-      }
+      if (rating === 4) return { ...card, state: 'review', interval: ANKI_CONFIG.easyInterval, due: now + ANKI_CONFIG.easyInterval * 86400 * 1000 };
     }
 
-    // 2. Review State (Graduated day-based cards)
     if (state === 'review') {
-      if (rating === 1) { // Lapse
+      if (rating === 1) {
         easeFactor = Math.max(ANKI_CONFIG.minEase, easeFactor - 0.20);
         return { ...card, state: 'relearning', stepIndex: 0, easeFactor, interval: 1, due: now + ANKI_CONFIG.learningSteps[0] * 60 * 1000 };
       }
-      if (rating === 2) { // Hard
+      if (rating === 2) {
         easeFactor = Math.max(ANKI_CONFIG.minEase, easeFactor - 0.15);
         interval = Math.max(interval + 1, Math.round(interval * ANKI_CONFIG.hardIntervalMultiplier));
         return { ...card, easeFactor, interval, due: now + interval * 86400 * 1000 };
       }
-      if (rating === 3) { // Good
+      if (rating === 3) {
         interval = Math.round(interval * easeFactor);
         return { ...card, interval, due: now + interval * 86400 * 1000 };
       }
-      if (rating === 4) { // Easy
+      if (rating === 4) {
         easeFactor += 0.15;
         interval = Math.round(interval * easeFactor * ANKI_CONFIG.easyBonus);
         return { ...card, easeFactor, interval, due: now + interval * 86400 * 1000 };
@@ -329,21 +335,18 @@
       };
     } else {
       const hardInt = Math.max(interval + 1, Math.round(interval * ANKI_CONFIG.hardIntervalMultiplier));
-      const goodInt = Math.round(interval * ease);
-      const easyInt = Math.round(interval * (ease + 0.15) * ANKI_CONFIG.easyBonus);
       return {
         again: '10m (1)',
         hard: `${hardInt}d (2)`,
-        good: `${goodInt}d (3)`,
-        easy: `${easyInt}d (4)`
+        good: `${Math.round(interval * ease)}d (3)`,
+        easy: `${Math.round(interval * (ease + 0.15) * ANKI_CONFIG.easyBonus)}d (4)`
       };
     }
   }
 
   function loadQueue() {
     const cards = db[currentDeck] || [];
-    const now = Date.now();
-    queue = cards.filter(c => c.due <= now).sort((a, b) => a.due - b.due);
+    queue = cards.filter(c => c.due <= Date.now()).sort((a, b) => a.due - b.due);
     isFlipped = false;
     document.getElementById('srsControls').style.display = 'none';
 
@@ -387,7 +390,6 @@
     loadQueue();
   }
 
-  /* --- 2. Type-in Active Recall --- */
   let typeIndex = 0;
   function initTypeCard() {
     const cards = db[currentDeck] || [];
@@ -418,7 +420,7 @@
 
     if (score >= 0.6 || typed === answer) {
       feedback.className = 'feedback-box pass';
-      feedback.innerHTML = `<b>Correct Recall! (${Math.round(score * 100)}% key concepts hit)</b><br/>Official: ${card.back}`;
+      feedback.innerHTML = `<b>Correct Recall! (${Math.round(score * 100)}% key points hit)</b><br/>Expected: ${card.back}`;
     } else {
       feedback.className = 'feedback-box fail';
       feedback.innerHTML = `<b>Missed Key Points.</b><br/><b>Expected:</b> ${card.back}<br/><b>You wrote:</b> ${typed || '<i>(blank)</i>'}`;
@@ -427,7 +429,6 @@
 
   function nextTypeCard() { typeIndex++; initTypeCard(); }
 
-  /* --- 3. Cloze Deletion --- */
   let clozeIndex = 0, currentClozeWord = '';
   function initClozeCard() {
     const cards = db[currentDeck] || [];
@@ -460,13 +461,12 @@
       feedback.innerHTML = `<b>Exact Match!</b> Answer: <b>${currentClozeWord}</b>`;
     } else {
       feedback.className = 'feedback-box fail';
-      feedback.innerHTML = `<b>Incorrect.</b> The missing keyword was: <b>${currentClozeWord}</b>`;
+      feedback.innerHTML = `<b>Incorrect.</b> Keyword was: <b>${currentClozeWord}</b>`;
     }
   }
 
   function nextClozeCard() { clozeIndex++; initClozeCard(); }
 
-  /* --- 4. Blurting / Feynman --- */
   let blurtIndex = 0, blurtTime = 45, blurtInterval = null;
   function initBlurtCard() {
     const cards = db[currentDeck] || [];
@@ -505,7 +505,6 @@
 
   function nextBlurtCard() { blurtIndex++; initBlurtCard(); }
 
-  /* --- 5. Reverse Testing --- */
   let reverseIndex = 0;
   function initReverseCard() {
     const cards = db[currentDeck] || [];
@@ -541,7 +540,6 @@
 
   function nextReverseCard() { reverseIndex++; initReverseCard(); }
 
-  /* --- 6. Match Grid --- */
   let selectedTile = null, matchStartTime = null, matchTimerInterval = null;
   function startMatchGame() {
     clearInterval(matchTimerInterval);
@@ -599,7 +597,6 @@
     }
   }
 
-  /* --- Data Persistence & Drive Sync --- */
   function populateDecks() {
     const s = document.getElementById('deckSelector');
     s.innerHTML = '';
