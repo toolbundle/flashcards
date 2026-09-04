@@ -28,9 +28,9 @@
     .badge { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 9999px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
     .badge.online { border-color: var(--success); color: var(--success); }
 
-    /* Nav Tabs */
-    .mode-tabs { display: flex; gap: 0.5rem; background: var(--surface); padding: 0.35rem; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
-    .tab-btn { flex: 1; padding: 0.6rem; border: none; background: transparent; color: var(--muted); font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.15s; font-size: 0.85rem; }
+    /* Navigation Modes */
+    .mode-tabs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.35rem; background: var(--surface); padding: 0.35rem; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+    .tab-btn { padding: 0.6rem 0.2rem; border: none; background: transparent; color: var(--muted); font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.15s; font-size: 0.75rem; text-align: center; }
     .tab-btn.active { background: var(--card); color: var(--text); }
 
     .btn { background: var(--accent); color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.15s; }
@@ -41,7 +41,7 @@
     .deck-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
     select { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 0.6rem; border-radius: 8px; outline: none; }
 
-    /* Flashcard Stage */
+    /* Mode 1: SM-2 Cards */
     .flashcard { background: var(--card); border: 1px solid var(--border); border-radius: 14px; min-height: 260px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; cursor: pointer; position: relative; user-select: none; }
     .card-meta { position: absolute; top: 1rem; left: 1.25rem; font-size: 0.75rem; text-transform: uppercase; color: var(--muted); }
     .card-text { font-size: 1.35rem; font-weight: 500; line-height: 1.5; }
@@ -55,16 +55,18 @@
     .btn-good { background: #2563eb; }
     .btn-easy { background: #059669; }
 
-    /* Learn Mode */
-    .learn-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; }
-    .learn-prompt { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; }
-    .options-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
-    .option-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 1rem; border-radius: 8px; text-align: left; cursor: pointer; font-size: 0.95rem; transition: 0.15s; }
-    .option-btn:hover { border-color: var(--accent); }
-    .option-btn.correct { background: #065f46; border-color: var(--success); }
-    .option-btn.wrong { background: #7f1d1d; border-color: var(--danger); }
+    /* Interactive Revision Panels */
+    .work-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; }
+    .work-prompt { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+    .work-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.25rem; }
+    .feedback-box { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; display: none; }
+    .feedback-box.pass { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: #6ee7b7; }
+    .feedback-box.fail { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: #fca5a5; }
 
-    /* Match Mode */
+    .cloze-blank { border-bottom: 2px solid var(--accent); padding: 0 4px; color: var(--accent); font-weight: 700; }
+    .blurting-timer { font-size: 1.5rem; font-weight: 700; color: var(--warning); margin-bottom: 0.75rem; text-align: right; }
+
+    /* Match Grid */
     .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
     .match-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
     .tile { background: var(--card); border: 2px solid var(--border); padding: 1.25rem 0.75rem; border-radius: 10px; min-height: 100px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; user-select: none; }
@@ -73,10 +75,10 @@
     .tile.matched { opacity: 0; pointer-events: none; transform: scale(0.9); }
     .tile.error { border-color: var(--danger); background: #450a0a; }
 
-    /* Panels */
+    /* Panels & Inputs */
     .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem; }
-    textarea, input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.85rem; }
-    textarea:focus, input:focus { outline: none; border-color: var(--accent); }
+    textarea, input[type="text"] { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.9rem; }
+    textarea:focus, input[type="text"]:focus { outline: none; border-color: var(--accent); }
   </style>
 </head>
 <body>
@@ -84,17 +86,20 @@
 <div class="container">
   <header>
     <div>
-      <h2>⚡ ToolBundle Revision</h2>
+      <h2>⚡ ToolBundle Active Recall</h2>
       <span class="badge" id="cloudBadge">● Local Only</span>
     </div>
     <button class="btn btn-secondary" id="authBtn">Connect Drive</button>
   </header>
 
-  <!-- Navigation Tabs -->
+  <!-- High-Yield Mode Tabs -->
   <div class="mode-tabs">
-    <button class="tab-btn active" onclick="switchMode('cards')">🃏 Flashcards (SM-2)</button>
-    <button class="tab-btn" onclick="switchMode('learn')">🧠 Learn</button>
-    <button class="tab-btn" onclick="switchMode('match')">🧩 Match</button>
+    <button class="tab-btn active" onclick="switchMode('cards')">🃏 Flashcards</button>
+    <button class="tab-btn" onclick="switchMode('type')">✍️ Type-In</button>
+    <button class="tab-btn" onclick="switchMode('cloze')">🧩 Cloze</button>
+    <button class="tab-btn" onclick="switchMode('blurt')">⏱️ Blurting</button>
+    <button class="tab-btn" onclick="switchMode('reverse')">🔄 Reverse</button>
+    <button class="tab-btn" onclick="switchMode('match')">🎮 Match</button>
   </div>
 
   <div class="deck-bar">
@@ -102,7 +107,7 @@
     <button class="btn btn-secondary" onclick="promptNewDeck()">+ Deck</button>
   </div>
 
-  <!-- MODE 1: Flashcards -->
+  <!-- MODE 1: Flashcards (SM-2) -->
   <div id="modeCards">
     <div class="flashcard" id="cardBox" onclick="flipCard()">
       <span class="card-meta" id="cardMeta">Question</span>
@@ -117,28 +122,68 @@
     </div>
   </div>
 
-  <!-- MODE 2: Learn -->
-  <div id="modeLearn" style="display: none;">
-    <div class="learn-box">
-      <div class="learn-prompt" id="learnPrompt">What is...</div>
-      <div class="options-grid" id="learnOptions"></div>
+  <!-- MODE 2: Type-in Active Recall -->
+  <div id="modeType" style="display: none;">
+    <div class="work-box">
+      <div class="work-prompt" id="typePrompt">Question</div>
+      <textarea id="typeInput" rows="3" placeholder="Type the precise definition / answer here..."></textarea>
+      <button class="btn" style="width: 100%;" id="checkTypeBtn" onclick="checkTypedAnswer()">Check Active Recall</button>
+      <div class="feedback-box" id="typeFeedback"></div>
+      <button class="btn btn-secondary" style="width: 100%; margin-top: 0.75rem; display: none;" id="typeNextBtn" onclick="nextTypeCard()">Next Question ➔</button>
     </div>
   </div>
 
-  <!-- MODE 3: Match Game -->
+  <!-- MODE 3: Cloze Deletion -->
+  <div id="modeCloze" style="display: none;">
+    <div class="work-box">
+      <div class="work-sub">Fill in the missing core keyword:</div>
+      <div class="work-prompt" id="clozePrompt">Loading...</div>
+      <input type="text" id="clozeInput" placeholder="Type the missing keyword..." autocomplete="off" />
+      <button class="btn" style="width: 100%;" id="checkClozeBtn" onclick="checkClozeAnswer()">Check Keyword</button>
+      <div class="feedback-box" id="clozeFeedback"></div>
+      <button class="btn btn-secondary" style="width: 100%; margin-top: 0.75rem; display: none;" id="clozeNextBtn" onclick="nextClozeCard()">Next Cloze ➔</button>
+    </div>
+  </div>
+
+  <!-- MODE 4: Blurting / Feynman -->
+  <div id="modeBlurt" style="display: none;">
+    <div class="work-box">
+      <div class="blurting-timer" id="blurtTimer">45s</div>
+      <div class="work-prompt" id="blurtPrompt">Topic Header</div>
+      <div class="work-sub">Brain-dump everything you know without looking. Be as detailed as possible.</div>
+      <textarea id="blurtInput" rows="5" placeholder="Write everything you know about this concept..."></textarea>
+      <button class="btn" style="width: 100%;" id="finishBlurtBtn" onclick="finishBlurting()">Stop & Compare Gaps</button>
+      <div class="feedback-box" id="blurtFeedback"></div>
+      <button class="btn btn-secondary" style="width: 100%; margin-top: 0.75rem; display: none;" id="blurtNextBtn" onclick="nextBlurtCard()">Next Blurting Topic ➔</button>
+    </div>
+  </div>
+
+  <!-- MODE 5: Reverse Testing -->
+  <div id="modeReverse" style="display: none;">
+    <div class="work-box">
+      <div class="work-sub">Identify the exact term for this definition:</div>
+      <div class="work-prompt" id="reversePrompt" style="font-size: 1.1rem; line-height: 1.6;">Definition goes here...</div>
+      <input type="text" id="reverseInput" placeholder="Exact concept name..." autocomplete="off" />
+      <button class="btn" style="width: 100%;" id="checkReverseBtn" onclick="checkReverseAnswer()">Verify Term</button>
+      <div class="feedback-box" id="reverseFeedback"></div>
+      <button class="btn btn-secondary" style="width: 100%; margin-top: 0.75rem; display: none;" id="reverseNextBtn" onclick="nextReverseCard()">Next Term ➔</button>
+    </div>
+  </div>
+
+  <!-- MODE 6: Match Grid -->
   <div id="modeMatch" style="display: none;">
     <div class="match-header">
-      <span>Time: <b id="matchTimer">0.0s</b></span>
-      <button class="btn btn-secondary" onclick="startMatchGame()">Restart</button>
+      <span>Timer: <b id="matchTimer">0.0s</b></span>
+      <button class="btn btn-secondary" onclick="startMatchGame()">Restart Grid</button>
     </div>
     <div class="match-grid" id="matchGrid"></div>
   </div>
 
   <!-- Import Panel -->
   <div class="panel">
-    <h4 style="margin-bottom: 0.75rem;">⚡ Bulk Import (Tab / Dash Separated)</h4>
-    <textarea id="bulkData" rows="3" placeholder="Term [TAB] Definition&#10;Primary research - Direct collection of original data"></textarea>
-    <button class="btn" style="width: 100%;" onclick="importBulk()">Import Into Current Deck</button>
+    <h4 style="margin-bottom: 0.5rem;">⚡ Bulk Import (Tab / Dash Separated)</h4>
+    <textarea id="bulkData" rows="3" placeholder="Term [TAB] Full Definition&#10;Secondary Research - Information already collected by others"></textarea>
+    <button class="btn" style="width: 100%;" onclick="importBulk()">Add to Current Deck</button>
   </div>
 </div>
 
@@ -190,28 +235,26 @@
   }
 
   function switchMode(mode) {
-    document.querySelectorAll('.tab-btn').forEach((b, i) => {
-      b.classList.toggle('active', ['cards', 'learn', 'match'][i] === mode);
-    });
-    document.getElementById('modeCards').style.display = mode === 'cards' ? 'block' : 'none';
-    document.getElementById('modeLearn').style.display = mode === 'learn' ? 'block' : 'none';
-    document.getElementById('modeMatch').style.display = mode === 'match' ? 'block' : 'none';
+    const modes = ['cards', 'type', 'cloze', 'blurt', 'reverse', 'match'];
+    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', modes[i] === mode));
+    modes.forEach(m => document.getElementById('mode' + m.charAt(0).toUpperCase() + m.slice(1)).style.display = (m === mode ? 'block' : 'none'));
 
-    if (mode === 'learn') startLearnCard();
+    clearInterval(blurtInterval);
+    if (mode === 'type') initTypeCard();
+    if (mode === 'cloze') initClozeCard();
+    if (mode === 'blurt') initBlurtCard();
+    if (mode === 'reverse') initReverseCard();
     if (mode === 'match') startMatchGame();
   }
 
-  /* --- FLASHCARDS & SM-2 --- */
+  /* --- 1. SM-2 Flashcards --- */
   function calculateSM2(card, rating) {
     let { reps, ef, interval } = card;
-    if (rating === 1) {
-      reps = 0;
-      interval = 1;
-    } else {
+    if (rating === 1) { reps = 0; interval = 1; }
+    else {
       if (reps === 0) interval = 1;
       else if (reps === 1) interval = (rating === 2) ? 3 : 6;
       else interval = Math.round(interval * ef);
-
       if (rating === 2) interval = Math.max(1, Math.round(interval * 0.8));
       if (rating === 4) interval = Math.round(interval * 1.3);
       reps++;
@@ -222,8 +265,7 @@
 
   function loadQueue() {
     const cards = db[currentDeck] || [];
-    const now = Date.now();
-    queue = cards.filter(c => c.due <= now);
+    queue = cards.filter(c => c.due <= Date.now());
     isFlipped = false;
     document.getElementById('srsControls').style.display = 'none';
 
@@ -262,45 +304,163 @@
     loadQueue();
   }
 
-  /* --- LEARN MODE --- */
-  let currentLearnIndex = 0;
-  function startLearnCard() {
+  /* --- 2. Type-in Active Recall --- */
+  let typeIndex = 0;
+  function initTypeCard() {
     const cards = db[currentDeck] || [];
-    if (cards.length < 4) {
-      document.getElementById('learnPrompt').innerText = 'Add at least 4 cards to unlock Learn mode!';
-      document.getElementById('learnOptions').innerHTML = '';
-      return;
-    }
-    const card = cards[currentLearnIndex % cards.length];
-    document.getElementById('learnPrompt').innerText = card.front;
-
-    // Distractors
-    const others = cards.filter(c => c.id !== card.id).sort(() => 0.5 - Math.random()).slice(0, 3);
-    const options = [...others, card].sort(() => 0.5 - Math.random());
-
-    const container = document.getElementById('learnOptions');
-    container.innerHTML = '';
-    options.forEach(opt => {
-      const btn = document.createElement('button');
-      btn.className = 'option-btn';
-      btn.innerText = opt.back;
-      btn.onclick = () => {
-        if (opt.id === card.id) {
-          btn.classList.add('correct');
-          setTimeout(() => { currentLearnIndex++; startLearnCard(); }, 600);
-        } else {
-          btn.classList.add('wrong');
-        }
-      };
-      container.appendChild(btn);
-    });
+    if (!cards.length) return;
+    const card = cards[typeIndex % cards.length];
+    document.getElementById('typePrompt').innerText = card.front;
+    document.getElementById('typeInput').value = '';
+    document.getElementById('typeInput').disabled = false;
+    document.getElementById('typeFeedback').style.display = 'none';
+    document.getElementById('checkTypeBtn').style.display = 'block';
+    document.getElementById('typeNextBtn').style.display = 'none';
   }
 
-  /* --- MATCH MODE --- */
-  let selectedTile = null;
-  let matchStartTime = null;
-  let matchTimerInterval = null;
+  function checkTypedAnswer() {
+    const card = db[currentDeck][typeIndex % db[currentDeck].length];
+    const typed = document.getElementById('typeInput').value.toLowerCase().trim();
+    const answer = card.back.toLowerCase();
 
+    // Token match check
+    const keywords = answer.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(/\s+/).filter(w => w.length > 3);
+    const hits = keywords.filter(w => typed.includes(w));
+    const score = hits.length / Math.max(1, keywords.length);
+
+    const feedback = document.getElementById('typeFeedback');
+    feedback.style.display = 'block';
+    document.getElementById('typeInput').disabled = true;
+    document.getElementById('checkTypeBtn').style.display = 'none';
+    document.getElementById('typeNextBtn').style.display = 'block';
+
+    if (score >= 0.6 || typed === answer) {
+      feedback.className = 'feedback-box pass';
+      feedback.innerHTML = `<b>Correct Recall! (${Math.round(score * 100)}% key points hit)</b><br/>Official: ${card.back}`;
+    } else {
+      feedback.className = 'feedback-box fail';
+      feedback.innerHTML = `<b>Missed Key Points.</b><br/><b>Expected:</b> ${card.back}<br/><b>You wrote:</b> ${typed || '<i>(blank)</i>'}`;
+    }
+  }
+
+  function nextTypeCard() { typeIndex++; initTypeCard(); }
+
+  /* --- 3. Cloze Deletion --- */
+  let clozeIndex = 0, currentClozeWord = '';
+  function initClozeCard() {
+    const cards = db[currentDeck] || [];
+    if (!cards.length) return;
+    const card = cards[clozeIndex % cards.length];
+    const words = card.back.split(/\s+/);
+    const candidates = words.filter(w => w.replace(/[^a-zA-Z]/g, "").length >= 5);
+    const target = candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : words[0];
+    currentClozeWord = target.replace(/[^a-zA-Z]/g, "").toLowerCase();
+
+    const masked = card.back.replace(target, `<span class="cloze-blank">[ . . . . . ]</span>`);
+    document.getElementById('clozePrompt').innerHTML = `<b>${card.front}:</b><br/>${masked}`;
+    document.getElementById('clozeInput').value = '';
+    document.getElementById('clozeInput').disabled = false;
+    document.getElementById('clozeFeedback').style.display = 'none';
+    document.getElementById('checkClozeBtn').style.display = 'block';
+    document.getElementById('clozeNextBtn').style.display = 'none';
+  }
+
+  function checkClozeAnswer() {
+    const typed = document.getElementById('clozeInput').value.toLowerCase().trim();
+    const feedback = document.getElementById('clozeFeedback');
+    feedback.style.display = 'block';
+    document.getElementById('clozeInput').disabled = true;
+    document.getElementById('checkClozeBtn').style.display = 'none';
+    document.getElementById('clozeNextBtn').style.display = 'block';
+
+    if (typed === currentClozeWord) {
+      feedback.className = 'feedback-box pass';
+      feedback.innerHTML = `<b>Exact Match!</b> Answer: <b>${currentClozeWord}</b>`;
+    } else {
+      feedback.className = 'feedback-box fail';
+      feedback.innerHTML = `<b>Incorrect.</b> The missing keyword was: <b>${currentClozeWord}</b>`;
+    }
+  }
+
+  function nextClozeCard() { clozeIndex++; initClozeCard(); }
+
+  /* --- 4. Blurting / Feynman Method --- */
+  let blurtIndex = 0, blurtTime = 45, blurtInterval = null;
+  function initBlurtCard() {
+    const cards = db[currentDeck] || [];
+    if (!cards.length) return;
+    const card = cards[blurtIndex % cards.length];
+    document.getElementById('blurtPrompt').innerText = card.front;
+    document.getElementById('blurtInput').value = '';
+    document.getElementById('blurtInput').disabled = false;
+    document.getElementById('blurtFeedback').style.display = 'none';
+    document.getElementById('finishBlurtBtn').style.display = 'block';
+    document.getElementById('blurtNextBtn').style.display = 'none';
+
+    clearInterval(blurtInterval);
+    blurtTime = 45;
+    document.getElementById('blurtTimer').innerText = `${blurtTime}s`;
+    blurtInterval = setInterval(() => {
+      blurtTime--;
+      document.getElementById('blurtTimer').innerText = `${blurtTime}s`;
+      if (blurtTime <= 0) finishBlurting();
+    }, 1000);
+  }
+
+  function finishBlurting() {
+    clearInterval(blurtInterval);
+    const card = db[currentDeck][blurtIndex % db[currentDeck].length];
+    const typed = document.getElementById('blurtInput').value.trim();
+    document.getElementById('blurtInput').disabled = true;
+    document.getElementById('finishBlurtBtn').style.display = 'none';
+    document.getElementById('blurtNextBtn').style.display = 'block';
+
+    const feedback = document.getElementById('blurtFeedback');
+    feedback.style.display = 'block';
+    feedback.className = 'feedback-box pass';
+    feedback.innerHTML = `<b>Mark-Scheme Answer:</b><br/>${card.back}<br/><br/><b>What You Blurted:</b><br/>${typed || '<i>(Nothing entered)</i>'}`;
+  }
+
+  function nextBlurtCard() { blurtIndex++; initBlurtCard(); }
+
+  /* --- 5. Reverse Testing --- */
+  let reverseIndex = 0;
+  function initReverseCard() {
+    const cards = db[currentDeck] || [];
+    if (!cards.length) return;
+    const card = cards[reverseIndex % cards.length];
+    document.getElementById('reversePrompt').innerText = card.back;
+    document.getElementById('reverseInput').value = '';
+    document.getElementById('reverseInput').disabled = false;
+    document.getElementById('reverseFeedback').style.display = 'none';
+    document.getElementById('checkReverseBtn').style.display = 'block';
+    document.getElementById('reverseNextBtn').style.display = 'none';
+  }
+
+  function checkReverseAnswer() {
+    const card = db[currentDeck][reverseIndex % db[currentDeck].length];
+    const typed = document.getElementById('reverseInput').value.toLowerCase().trim();
+    const actual = card.front.toLowerCase().trim();
+
+    const feedback = document.getElementById('reverseFeedback');
+    feedback.style.display = 'block';
+    document.getElementById('reverseInput').disabled = true;
+    document.getElementById('checkReverseBtn').style.display = 'none';
+    document.getElementById('reverseNextBtn').style.display = 'block';
+
+    if (typed === actual || actual.includes(typed) && typed.length >= 4) {
+      feedback.className = 'feedback-box pass';
+      feedback.innerHTML = `<b>Correct Concept!</b> Term: <b>${card.front}</b>`;
+    } else {
+      feedback.className = 'feedback-box fail';
+      feedback.innerHTML = `<b>Incorrect.</b> Correct Term: <b>${card.front}</b>`;
+    }
+  }
+
+  function nextReverseCard() { reverseIndex++; initReverseCard(); }
+
+  /* --- 6. Match Grid --- */
+  let selectedTile = null, matchStartTime = null, matchTimerInterval = null;
   function startMatchGame() {
     clearInterval(matchTimerInterval);
     const cards = (db[currentDeck] || []).slice(0, 6);
@@ -308,8 +468,8 @@
 
     let tiles = [];
     cards.forEach(c => {
-      tiles.push({ id: c.id, text: c.front, type: 'front' });
-      tiles.push({ id: c.id, text: c.back, type: 'back' });
+      tiles.push({ id: c.id, text: c.front });
+      tiles.push({ id: c.id, text: c.back });
     });
     tiles.sort(() => 0.5 - Math.random());
 
@@ -345,10 +505,7 @@
       selectedTile.classList.add('matched');
       selectedTile.classList.remove('selected');
       selectedTile = null;
-
-      if (!document.querySelectorAll('.tile:not(.matched)').length) {
-        clearInterval(matchTimerInterval);
-      }
+      if (!document.querySelectorAll('.tile:not(.matched)').length) clearInterval(matchTimerInterval);
     } else {
       tile.classList.add('error');
       selectedTile.classList.add('error');
@@ -360,7 +517,7 @@
     }
   }
 
-  /* --- DATA & DECKS --- */
+  /* --- Data Persistence & Drive Sync --- */
   function populateDecks() {
     const s = document.getElementById('deckSelector');
     s.innerHTML = '';
@@ -391,8 +548,7 @@
   function importBulk() {
     const raw = document.getElementById('bulkData').value.trim();
     if (!raw) return;
-    const lines = raw.split('\n');
-    lines.forEach(l => {
+    raw.split('\n').forEach(l => {
       const p = l.includes('\t') ? l.split('\t') : l.split('-');
       if (p.length >= 2) {
         db[currentDeck].push({
